@@ -2,6 +2,10 @@
 
 A Model Context Protocol (MCP) server that enables secure interaction with Microsoft SQL Server databases. This server allows AI assistants to list tables, read data, and execute SQL queries through a controlled interface, making database exploration and analysis safer and more structured.
 
+<a href="https://glama.ai/mcp/servers/29cpe19k30">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/29cpe19k30/badge" alt="Microsoft SQL Server Server MCP server" />
+</a>
+
 ## Features
 
 - List available SQL Server tables as resources
