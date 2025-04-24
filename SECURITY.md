@@ -89,6 +89,7 @@ MSSQL_SERVER=your_server
 MSSQL_USER=mcp_login
 MSSQL_PASSWORD=your_secure_password
 MSSQL_DATABASE=your_database
+MSSQL_USE_WINDOWS_AUTH=true  # Set to true to use Windows Authentication
 ```
 
 ### Monitoring Usage

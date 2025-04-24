@@ -22,10 +22,15 @@ def get_db_config():
         "database": os.getenv("MSSQL_DATABASE")
     }
     
-    if not all([config["user"], config["password"], config["database"]]):
-        logger.error("Missing required database configuration. Please check environment variables:")
-        logger.error("MSSQL_USER, MSSQL_PASSWORD, and MSSQL_DATABASE are required")
-        raise ValueError("Missing required database configuration")
+    if os.getenv("MSSQL_USE_WINDOWS_AUTH", "false").lower() == "true":
+        config["trusted_connection"] = "yes"
+        config.pop("user", None)
+        config.pop("password", None)
+    else:
+        if not all([config["user"], config["password"], config["database"]]):
+            logger.error("Missing required database configuration. Please check environment variables:")
+            logger.error("MSSQL_USER, MSSQL_PASSWORD, and MSSQL_DATABASE are required")
+            raise ValueError("Missing required database configuration")
     
     return config
 
@@ -169,7 +174,7 @@ async def main():
     
     logger.info("Starting MSSQL MCP server...")
     config = get_db_config()
-    logger.info(f"Database config: {config['server']}/{config['database']} as {config['user']}")
+    logger.info(f"Database config: {config['server']}/{config['database']} as {config.get('user', 'Windows Authentication')}")
     
     async with stdio_server() as (read_stream, write_stream):
         try:

@@ -28,6 +28,7 @@ MSSQL_SERVER=localhost
 MSSQL_USER=your_username
 MSSQL_PASSWORD=your_password
 MSSQL_DATABASE=your_database
+MSSQL_USE_WINDOWS_AUTH=true  # Set to true to use Windows Authentication
 ```
 
 ## Usage
@@ -51,7 +52,8 @@ Add this to your `claude_desktop_config.json`:
         "MSSQL_SERVER": "localhost",
         "MSSQL_USER": "your_username",
         "MSSQL_PASSWORD": "your_password",
-        "MSSQL_DATABASE": "your_database"
+        "MSSQL_DATABASE": "your_database",
+        "MSSQL_USE_WINDOWS_AUTH": "true"  # Set to true to use Windows Authentication
       }
     }
   }
