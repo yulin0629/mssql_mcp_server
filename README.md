@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/richardhan-mssql-mcp-server-badge.png)](https://mseep.ai/app/richardhan-mssql-mcp-server)
+
 # Microsoft SQL Server MCP Server
 
 A Model Context Protocol (MCP) server that enables secure interaction with Microsoft SQL Server databases. This server allows AI assistants to list tables, read data, and execute SQL queries through a controlled interface, making database exploration and analysis safer and more structured.
