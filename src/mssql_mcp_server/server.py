@@ -19,15 +19,20 @@ def get_db_config():
         "server": os.getenv("MSSQL_SERVER", "localhost"),
         "user": os.getenv("MSSQL_USER"),
         "password": os.getenv("MSSQL_PASSWORD"),
-        "database": os.getenv("MSSQL_DATABASE")
+        "database": os.getenv("MSSQL_DATABASE"),
+        "port": os.getenv("MSSQL_PORT", "1433"),  # Default MSSQL port
     }
-    
+
     if not all([config["user"], config["password"], config["database"]]):
         logger.error("Missing required database configuration. Please check environment variables:")
         logger.error("MSSQL_USER, MSSQL_PASSWORD, and MSSQL_DATABASE are required")
         raise ValueError("Missing required database configuration")
     
     return config
+
+def get_command():
+    """Get the command to execute SQL queries."""
+    return os.getenv("MSSQL_COMMAND", "execute_sql")
 
 # Initialize server
 app = Server("mssql_mcp_server")
@@ -97,10 +102,11 @@ async def read_resource(uri: AnyUrl) -> str:
 @app.list_tools()
 async def list_tools() -> list[Tool]:
     """List available SQL Server tools."""
+    command = get_command()
     logger.info("Listing tools...")
     return [
         Tool(
-            name="execute_sql",
+            name=command,
             description="Execute an SQL query on the SQL Server",
             inputSchema={
                 "type": "object",
@@ -119,9 +125,10 @@ async def list_tools() -> list[Tool]:
 async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     """Execute SQL commands."""
     config = get_db_config()
+    command = get_command()
     logger.info(f"Calling tool: {name} with arguments: {arguments}")
     
-    if name != "execute_sql":
+    if name != command:
         raise ValueError(f"Unknown tool: {name}")
     
     query = arguments.get("query")
@@ -169,7 +176,8 @@ async def main():
     
     logger.info("Starting MSSQL MCP server...")
     config = get_db_config()
-    logger.info(f"Database config: {config['server']}/{config['database']} as {config['user']}")
+    command = get_command()
+    logger.info(f"Database config: {config['server']}/{config['database']}:{config['port']} as {config['user']} with command {command}")
     
     async with stdio_server() as (read_stream, write_stream):
         try:

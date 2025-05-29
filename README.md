@@ -23,15 +23,27 @@ The package will automatically install required system dependencies (like FreeTD
 pip install mssql-mcp-server
 ```
 
+## Local Builds
+
+```bash 
+pip install hatch
+hatch build
+pip install dist/mssql_mcp_server-0.1.0.tar.gz
+```
+
 ## Configuration
 
 Set the following environment variables:
 
 ```bash
+# Required
 MSSQL_SERVER=localhost
 MSSQL_USER=your_username
 MSSQL_PASSWORD=your_password
 MSSQL_DATABASE=your_database
+# Optional
+MSSQL_COMMAND=execute_sql
+MSSQL_PORT=your_database
 ```
 
 ## Usage
@@ -52,10 +64,15 @@ Add this to your `claude_desktop_config.json`:
         "mssql_mcp_server"
       ],
       "env": {
+        // Required
         "MSSQL_SERVER": "localhost",
         "MSSQL_USER": "your_username",
         "MSSQL_PASSWORD": "your_password",
-        "MSSQL_DATABASE": "your_database"
+        "MSSQL_DATABASE": "your_database",
+
+        // Optional
+        "MSSQL_COMMAND": "execute_sql", // search_staging
+        "MSSQL_PORT": "1433" 
       }
     }
   }
