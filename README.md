@@ -1,5 +1,10 @@
 # Microsoft SQL Server MCP Server
 
+[![CI/CD Pipeline](https://github.com/RichardHan/mssql_mcp_server/actions/workflows/ci.yml/badge.svg)](https://github.com/RichardHan/mssql_mcp_server/actions/workflows/ci.yml)
+[![Security Scan](https://github.com/RichardHan/mssql_mcp_server/actions/workflows/security.yml/badge.svg)](https://github.com/RichardHan/mssql_mcp_server/actions/workflows/security.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A Model Context Protocol (MCP) server that enables secure interaction with Microsoft SQL Server databases. This server allows AI assistants to list tables, read data, and execute SQL queries through a controlled interface, making database exploration and analysis safer and more structured.
 
 <a href="https://glama.ai/mcp/servers/29cpe19k30">
@@ -28,10 +33,44 @@ pip install mssql-mcp-server
 Set the following environment variables:
 
 ```bash
-MSSQL_SERVER=localhost
+# Required
+MSSQL_SERVER=localhost          # SQL Server hostname or IP
+MSSQL_DATABASE=your_database     # Database name
+
+# Authentication (choose one method)
+# Method 1: SQL Authentication (default)
 MSSQL_USER=your_username
 MSSQL_PASSWORD=your_password
+
+# Method 2: Windows Authentication
+MSSQL_WINDOWS_AUTH=true         # Set to 'true' for Windows auth
+
+# Optional
+MSSQL_PORT=1433                 # Custom port (default: 1433)
+MSSQL_ENCRYPT=false             # Enable encryption (default: false, true for Azure SQL)
+```
+
+### SQL Server LocalDB Configuration
+
+For SQL Server LocalDB connections:
+
+```bash
+MSSQL_SERVER=(localdb)\MSSQLLocalDB
 MSSQL_DATABASE=your_database
+# LocalDB typically uses Windows Authentication
+MSSQL_WINDOWS_AUTH=true
+```
+
+### Azure SQL Database Configuration
+
+For Azure SQL Database connections:
+
+```bash
+MSSQL_SERVER=your-server.database.windows.net
+MSSQL_DATABASE=your_database
+MSSQL_USER=your_username
+MSSQL_PASSWORD=your_password
+# Encryption is automatically enabled for Azure SQL
 ```
 
 ## Usage
@@ -55,7 +94,9 @@ Add this to your `claude_desktop_config.json`:
         "MSSQL_SERVER": "localhost",
         "MSSQL_USER": "your_username",
         "MSSQL_PASSWORD": "your_password",
-        "MSSQL_DATABASE": "your_database"
+        "MSSQL_DATABASE": "your_database",
+        "MSSQL_PORT": "1433",
+        "MSSQL_ENCRYPT": "false"
       }
     }
   }
@@ -72,6 +113,26 @@ pip install -r requirements.txt
 python -m mssql_mcp_server
 ```
 
+### Using Docker
+
+Build and run the server using Docker:
+
+```bash
+# Build the Docker image
+docker build -t mssql-mcp-server .
+
+# Run with environment variables
+docker run -it \
+  -e MSSQL_SERVER=your-server \
+  -e MSSQL_DATABASE=your-database \
+  -e MSSQL_USER=your-username \
+  -e MSSQL_PASSWORD=your-password \
+  mssql-mcp-server
+
+# Or use docker-compose (see docker-compose.example.yml)
+docker-compose -f docker-compose.example.yml up
+```
+
 ## Development
 
 ```bash
@@ -85,6 +146,9 @@ source venv/bin/activate  # or `venv\Scripts\activate` on Windows
 
 # Install development dependencies
 pip install -r requirements-dev.txt
+
+# Test your database connection
+python test_connection.py
 
 # Run tests
 pytest
@@ -119,10 +183,36 @@ See [SQL Server Security Configuration Guide](SECURITY.md) for detailed instruct
 
 MIT License - see LICENSE file for details.
 
+## Testing
+
+This project includes comprehensive test coverage for production readiness:
+
+- **Unit Tests**: Configuration, validation, and core functionality
+- **Security Tests**: SQL injection prevention and input validation
+- **Integration Tests**: MCP protocol and database operations
+- **Performance Tests**: Load handling and scalability
+- **Error Tests**: Resilience and recovery scenarios
+
+Run tests:
+```bash
+# All tests
+./run_tests.py
+
+# With coverage
+./run_tests.py --coverage
+
+# Specific suite
+./run_tests.py --suite security
+```
+
+See [Test Documentation](tests/README.md) and [Production Readiness](PRODUCTION_READINESS.md) for details.
+
 ## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+3. Write tests for your changes
+4. Ensure all tests pass (`./run_tests.py`)
+5. Commit your changes (`git commit -m 'Add some amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
