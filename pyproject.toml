@@ -33,3 +33,6 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 mssql_mcp_server = "mssql_mcp_server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mssql_mcp_server"]
