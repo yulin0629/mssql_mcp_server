@@ -91,6 +91,61 @@ MSSQL_PASSWORD=your_password
 
 Add this to your `claude_desktop_config.json`:
 
+#### Option 1: Using PyPI Package with uvx (Recommended)
+
+```json
+{
+  "mcpServers": {
+    "mssql": {
+      "command": "uvx",
+      "args": [
+        "microsoft_sql_server_mcp"
+      ],
+      "env": {
+        "MSSQL_SERVER": "localhost",
+        "MSSQL_USER": "your_username",
+        "MSSQL_PASSWORD": "your_password",
+        "MSSQL_DATABASE": "your_database",
+        "MSSQL_PORT": "1433",
+        "MSSQL_ENCRYPT": "false"
+      }
+    }
+  }
+}
+```
+
+#### Option 2: Using PyPI Package with Python
+
+First install the package:
+```bash
+pip install microsoft_sql_server_mcp
+```
+
+Then use this configuration:
+```json
+{
+  "mcpServers": {
+    "mssql": {
+      "command": "python",
+      "args": [
+        "-m",
+        "mssql_mcp_server"
+      ],
+      "env": {
+        "MSSQL_SERVER": "localhost",
+        "MSSQL_USER": "your_username",
+        "MSSQL_PASSWORD": "your_password",
+        "MSSQL_DATABASE": "your_database",
+        "MSSQL_PORT": "1433",
+        "MSSQL_ENCRYPT": "false"
+      }
+    }
+  }
+}
+```
+
+#### Option 3: Using Local Development Version
+
 ```json
 {
   "mcpServers": {
@@ -103,7 +158,6 @@ Add this to your `claude_desktop_config.json`:
         "mssql_mcp_server"
       ],
       "env": {
-        // Required
         "MSSQL_SERVER": "localhost",
         "MSSQL_USER": "your_username",
         "MSSQL_PASSWORD": "your_password",
