@@ -1,64 +1,59 @@
-name: Release
+name: Create Release
 
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*'  # Trigger on version tags like v1.0.0
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.0)'
+        required: true
+        type: string
 
 jobs:
-  release:
-    name: Create Release
+  create-release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      packages: write
     
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install build twine
-      
-      - name: Build package
-        run: |
-          python -m build
-      
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/*
-          generate_release_notes: true
-          draft: false
-          prerelease: ${{ contains(github.ref, 'rc') || contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
-      
-      - name: Publish to PyPI
-        if: "!contains(github.ref, 'rc') && !contains(github.ref, 'beta') && !contains(github.ref, 'alpha')"
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          twine upload dist/*
-      
-      - name: Build and push Docker image
-        env:
-          REGISTRY: ghcr.io
-          IMAGE_NAME: ${{ github.repository }}
-        run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          VERSION=$(echo $VERSION | sed -e 's/^v//')
-          
-          docker build -t $REGISTRY/$IMAGE_NAME:$VERSION .
-          docker tag $REGISTRY/$IMAGE_NAME:$VERSION $REGISTRY/$IMAGE_NAME:latest
-          
-          docker push $REGISTRY/$IMAGE_NAME:$VERSION
-          docker push $REGISTRY/$IMAGE_NAME:latest
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Get all history for changelog
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Generate changelog from git history
+        echo "## What's Changed" > RELEASE_NOTES.md
+        echo "" >> RELEASE_NOTES.md
+        
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -z "$LAST_TAG" ]; then
+          git log --pretty=format:"* %s (%h)" >> RELEASE_NOTES.md
+        else
+          git log ${LAST_TAG}..HEAD --pretty=format:"* %s (%h)" >> RELEASE_NOTES.md
+        fi
+        
+        echo "" >> RELEASE_NOTES.md
+        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LAST_TAG}...v${{ github.event.inputs.version || github.ref_name }}" >> RELEASE_NOTES.md
+    
+    - name: Create Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        VERSION="${{ github.event.inputs.version || github.ref_name }}"
+        VERSION="${VERSION#v}"  # Remove 'v' prefix if present
+        
+        gh release create "v${VERSION}" \
+          --title "Release v${VERSION}" \
+          --notes-file RELEASE_NOTES.md \
+          --draft
