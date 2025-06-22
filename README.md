@@ -140,11 +140,16 @@ docker-compose -f docker-compose.example.yml up
 git clone https://github.com/RichardHan/mssql_mcp_server.git
 cd mssql_mcp_server
 
-# Create virtual environment
+# Option 1: Using Make (recommended)
+make install-dev  # Set up development environment
+make test         # Run tests
+make format       # Format code
+make lint         # Lint code
+make run          # Run the server
+
+# Option 2: Manual setup
 python -m venv venv
 source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-
-# Install development dependencies
 pip install -r requirements-dev.txt
 
 # Test your database connection
@@ -153,6 +158,63 @@ python test_connection.py
 # Run tests
 pytest
 ```
+
+### Docker Development
+
+This repository includes Docker configuration for easy testing with a SQL Server instance:
+
+```bash
+# Start SQL Server and MCP server containers
+make docker-build
+make docker-up
+
+# Test the connection to the SQL Server
+make test-connection
+
+# Run tests inside the Docker container
+make docker-test
+
+# Access the MCP server container
+make docker-exec
+
+# Tear down the containers
+make docker-down
+```
+
+#### Docker Environment Variables
+
+You can customize the Docker configuration by setting environment variables:
+
+```bash
+# Change the host port for SQL Server
+export HOST_SQL_PORT=1435
+
+# Change the SQL Server password
+export MSSQL_PASSWORD=MyCustomPassword!
+
+# Start the containers with custom configuration
+make docker-up
+```
+
+Available Docker environment variables:
+
+| Variable         | Default            | Description                           |
+| ---------------- | ------------------ | ------------------------------------- |
+| MSSQL_SERVER     | mssql              | Server hostname (container name)      |
+| MSSQL_PORT       | 1433               | SQL Server port (internal)            |
+| MSSQL_USER       | sa                 | SQL Server username                   |
+| MSSQL_PASSWORD   | StrongPassword123! | SQL Server password                   |
+| MSSQL_DATABASE   | master             | Default database                      |
+| HOST_SQL_PORT    | 1434               | Host port mapped to SQL Server        |
+| SQL_MEMORY_LIMIT | 2g                 | Memory limit for SQL Server container |
+
+The Docker setup includes:
+- A SQL Server 2019 container with a default `sa` user
+- The MCP server container with all dependencies pre-installed
+- Proper networking between the containers
+- Health checks to ensure proper startup sequencing
+
+This is useful for development and testing without requiring a local SQL Server installation.
 
 ## Security Considerations
 
