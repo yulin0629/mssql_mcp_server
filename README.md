@@ -28,6 +28,14 @@ The package will automatically install required system dependencies (like FreeTD
 pip install mssql-mcp-server
 ```
 
+## Local Builds
+
+```bash 
+pip install hatch
+hatch build
+pip install dist/mssql_mcp_server-0.1.0.tar.gz
+```
+
 ## Configuration
 
 Set the following environment variables:
@@ -39,6 +47,7 @@ MSSQL_DATABASE=your_database     # Database name
 
 # Authentication (choose one method)
 # Method 1: SQL Authentication (default)
+
 MSSQL_USER=your_username
 MSSQL_PASSWORD=your_password
 
@@ -68,6 +77,7 @@ For Azure SQL Database connections:
 ```bash
 MSSQL_SERVER=your-server.database.windows.net
 MSSQL_DATABASE=your_database
+
 MSSQL_USER=your_username
 MSSQL_PASSWORD=your_password
 # Encryption is automatically enabled for Azure SQL
@@ -91,6 +101,7 @@ Add this to your `claude_desktop_config.json`:
         "mssql_mcp_server"
       ],
       "env": {
+        // Required
         "MSSQL_SERVER": "localhost",
         "MSSQL_USER": "your_username",
         "MSSQL_PASSWORD": "your_password",
