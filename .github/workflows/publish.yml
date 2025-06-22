@@ -46,7 +46,7 @@ jobs:
     
     environment:
       name: test-pypi
-      url: https://test.pypi.org/p/mssql-mcp-server
+      url: https://test.pypi.org/p/microsoft_sql_server_mcp
     
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
@@ -72,7 +72,7 @@ jobs:
     
     environment:
       name: pypi
-      url: https://pypi.org/p/mssql-mcp-server
+      url: https://pypi.org/p/microsoft_sql_server_mcp
     
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing

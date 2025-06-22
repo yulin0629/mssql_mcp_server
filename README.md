@@ -27,7 +27,7 @@ A Model Context Protocol (MCP) server that enables secure interaction with Micro
 The package will automatically install required system dependencies (like FreeTDS) when installed through MCP:
 
 ```bash
-pip install mssql-mcp-server
+pip install microsoft_sql_server_mcp
 ```
 
 ## Local Builds

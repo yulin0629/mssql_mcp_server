@@ -161,23 +161,18 @@ Closing this issue as the server configuration is now working correctly.
 ## Issue #3: "pip install mssql-mcp-server" installs the wrong project
 **Status: NEEDS INVESTIGATION**
 
-Thank you for reporting this. This appears to be a PyPI package naming conflict. The correct installation method for now is:
+Great news! The package is now available on PyPI. You can install it directly:
 
 ```bash
-# Clone and install from source
+pip install microsoft_sql_server_mcp
+```
+
+Alternatively, you can still install from source:
+```bash
 git clone https://github.com/RichardHan/mssql_mcp_server.git
 cd mssql_mcp_server
 pip install -e .
 ```
-
-Or using the new build method:
-```bash
-pip install hatch
-hatch build
-pip install dist/mssql_mcp_server-*.tar.gz
-```
-
-We'll investigate the PyPI package naming issue and provide an update.
 
 ---
 

@@ -1,5 +1,5 @@
 [project]
-name = "mssql_mcp_server"
+name = "microsoft_sql_server_mcp"
 version = "0.1.0"
 description = "A Model Context Protocol (MCP) server that enables secure interaction with Microsoft SQL Server databases."
 readme = "README.md"

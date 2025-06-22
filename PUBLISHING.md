@@ -16,7 +16,7 @@ Modern PyPI uses "Trusted Publishing" which is more secure than API tokens. Here
 1. Go to your PyPI account settings
 2. Navigate to "Publishing" → "Add a new publisher"
 3. Fill in:
-   - **PyPI Project Name**: `mssql-mcp-server`
+   - **PyPI Project Name**: `microsoft_sql_server_mcp`
    - **Owner**: `RichardHan`
    - **Repository**: `mssql_mcp_server`
    - **Workflow name**: `publish.yml`
@@ -81,15 +81,15 @@ No secrets are needed when using Trusted Publishing!
 2. **Test on Test PyPI**:
    ```bash
    # Install from Test PyPI
-   pip install -i https://test.pypi.org/simple/ mssql-mcp-server
+   pip install -i https://test.pypi.org/simple/ microsoft_sql_server_mcp
    ```
 
 ## Troubleshooting
 
 ### Package Name Conflicts
 
-If `mssql-mcp-server` is taken on PyPI, you may need to:
-1. Use a different name (e.g., `mssql-mcp`, `mcp-mssql-server`)
+If `microsoft_sql_server_mcp` is taken on PyPI, you may need to:
+1. Use a different name (e.g., `mssql-mcp`, `mcp-server-mssql`)
 2. Contact PyPI support if you believe you should own the name
 
 ### Build Failures
