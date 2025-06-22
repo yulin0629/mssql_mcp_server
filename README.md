@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/richardhan-mssql-mcp-server-badge.png)](https://mseep.ai/app/richardhan-mssql-mcp-server)
+
 # Microsoft SQL Server MCP Server
 
 [![CI/CD Pipeline](https://github.com/RichardHan/mssql_mcp_server/actions/workflows/ci.yml/badge.svg)](https://github.com/RichardHan/mssql_mcp_server/actions/workflows/ci.yml)
