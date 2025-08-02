@@ -7,7 +7,7 @@ from concurrent.futures import ThreadPoolExecutor
 import gc
 import psutil
 import os
-from mssql_mcp_server.server import app
+from yulin_mssql_mcp.server import app
 
 
 class TestPerformance:

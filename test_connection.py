@@ -8,7 +8,7 @@ import pymssql
 # Add src to path to import our server module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from mssql_mcp_server.server import get_db_config
+from yulin_mssql_mcp.server import get_db_config
 
 try:
     print("Loading database configuration from environment variables...")

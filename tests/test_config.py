@@ -2,7 +2,7 @@
 import pytest
 import os
 from unittest.mock import patch
-from mssql_mcp_server.server import get_db_config, validate_table_name
+from yulin_mssql_mcp.server import get_db_config, validate_table_name
 
 
 class TestDatabaseConfiguration:

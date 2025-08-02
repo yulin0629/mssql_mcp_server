@@ -5,7 +5,7 @@ import json
 from unittest.mock import Mock, patch, AsyncMock
 from mcp.server.stdio import stdio_server
 from mcp.types import TextContent, Resource, Tool
-from mssql_mcp_server.server import app
+from yulin_mssql_mcp.server import app
 
 
 class TestMCPProtocolIntegration:

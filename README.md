@@ -1,11 +1,7 @@
 # Microsoft SQL Server MCP Server
 
-[![PyPI](https://img.shields.io/pypi/v/microsoft_sql_server_mcp)](https://pypi.org/project/microsoft_sql_server_mcp/)
+[![PyPI](https://img.shields.io/pypi/v/yulin-mssql-mcp)](https://pypi.org/project/yulin-mssql-mcp/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
-<a href="https://glama.ai/mcp/servers/29cpe19k30">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/29cpe19k30/badge" alt="Microsoft SQL Server MCP server" />
-</a>
 
 A Model Context Protocol (MCP) server for secure SQL Server database access through Claude Desktop.
 
@@ -28,7 +24,7 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "mssql": {
       "command": "uvx",
-      "args": ["microsoft_sql_server_mcp"],
+      "args": ["yulin-mssql-mcp"],
       "env": {
         "MSSQL_SERVER": "localhost",
         "MSSQL_DATABASE": "your_database",
@@ -76,7 +72,7 @@ MSSQL_ENCRYPT=true              # Force encryption
 
 ### Using pip
 ```bash
-pip install microsoft_sql_server_mcp
+pip install yulin-mssql-mcp
 ```
 
 Then in `claude_desktop_config.json`:
@@ -84,8 +80,8 @@ Then in `claude_desktop_config.json`:
 {
   "mcpServers": {
     "mssql": {
-      "command": "python",
-      "args": ["-m", "mssql_mcp_server"],
+      "command": "yulin-mssql-mcp",
+      "args": [],
       "env": { ... }
     }
   }
@@ -94,7 +90,7 @@ Then in `claude_desktop_config.json`:
 
 ### Development
 ```bash
-git clone https://github.com/RichardHan/mssql_mcp_server.git
+git clone https://github.com/yulin0629/mssql_mcp_server.git
 cd mssql_mcp_server
 pip install -e .
 ```

@@ -1,7 +1,7 @@
 """Security tests for SQL injection prevention and safe query handling."""
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
-from mssql_mcp_server.server import validate_table_name, read_resource, call_tool
+from yulin_mssql_mcp.server import validate_table_name, read_resource, call_tool
 from pydantic import AnyUrl
 from mcp.types import TextContent
 
@@ -150,7 +150,7 @@ class TestResourceAccessControl:
                 'MSSQL_PASSWORD': 'test',
                 'MSSQL_DATABASE': 'test'
             }):
-                from mssql_mcp_server.server import list_resources
+                from yulin_mssql_mcp.server import list_resources
                 resources = await list_resources()
                 
                 # Verify system tables are filtered out (if implemented)

@@ -2,7 +2,7 @@
 import pytest
 import asyncio
 from unittest.mock import Mock, patch, PropertyMock
-from mssql_mcp_server.server import app, get_db_config
+from yulin_mssql_mcp.server import app, get_db_config
 import pymssql
 
 

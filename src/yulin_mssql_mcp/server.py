@@ -60,17 +60,14 @@ def get_db_config():
         except ValueError:
             logger.warning(f"Invalid MSSQL_PORT value: {port}. Using default port.")
     
-    # Encryption settings for Azure SQL (Issue #11)
+    # TDS version settings for Azure SQL (Issue #11)
     # Check if we're connecting to Azure SQL
     if config["server"] and ".database.windows.net" in config["server"]:
         config["tds_version"] = "7.4"  # Required for Azure SQL
-        # Azure SQL requires encryption
-        if os.getenv("MSSQL_ENCRYPT", "true").lower() == "true":
-            config["encrypt"] = True
-    else:
-        # For non-Azure connections, respect the MSSQL_ENCRYPT setting
-        encrypt_str = os.getenv("MSSQL_ENCRYPT", "false")
-        config["encrypt"] = encrypt_str.lower() == "true"
+        logger.info("Detected Azure SQL connection, using TDS version 7.4")
+    
+    # Note: pymssql doesn't support encrypt parameter directly
+    # For encryption, you need to configure it at the server level or use other drivers
     
     # Windows Authentication support (Issue #7)
     use_windows_auth = os.getenv("MSSQL_WINDOWS_AUTH", "false").lower() == "true"

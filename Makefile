@@ -1,39 +1,32 @@
-.PHONY: venv install install-dev test lint format clean run docker-build docker-up docker-down docker-test docker-exec
+.PHONY: install install-dev test lint format clean run docker-build docker-up docker-down docker-test docker-exec
 
-PYTHON := python3
-VENV := venv
-BIN := $(VENV)/bin
+install:
+	uv pip install -r requirements.txt
 
-venv:
-	$(PYTHON) -m venv $(VENV)
-
-install: venv
-	$(BIN)/pip install -r requirements.txt
-
-install-dev: install
-	$(BIN)/pip install -r requirements-dev.txt
-	$(BIN)/pip install -e .
+install-dev:
+	uv pip install -r requirements-dev.txt
+	uv pip install -e .
 
 test: install-dev
-	$(BIN)/pytest -v
+	uv run pytest -v
 
 lint: install-dev
-	$(BIN)/black --check src tests
-	$(BIN)/isort --check src tests
-	$(BIN)/mypy src tests
+	uv run black --check src tests
+	uv run isort --check src tests
+	uv run mypy src tests
 
 format: install-dev
-	$(BIN)/black src tests
-	$(BIN)/isort src tests
+	uv run black src tests
+	uv run isort src tests
 
 clean:
-	rm -rf $(VENV) __pycache__ .pytest_cache .coverage
+	rm -rf .venv __pycache__ .pytest_cache .coverage
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name "*.egg-info" -exec rm -rf {} +
 	find . -type f -name "*.pyc" -delete
 
 run: install
-	$(BIN)/python -m mssql_mcp_server
+	uv run python -m yulin_mssql_mcp
 
 # Docker commands
 docker-build:
