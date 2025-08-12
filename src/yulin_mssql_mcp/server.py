@@ -2,17 +2,26 @@ import asyncio
 import logging
 import os
 import re
+import sys
 import pymssql
 from mcp.server import Server
 from mcp.types import Resource, Tool, TextContent
 from pydantic import AnyUrl
 
-# Configure logging
+# Configure logging - MUST output to stderr for MCP stdio transport
+# Debug mode can be enabled via MCP_DEBUG environment variable
+debug_mode = os.getenv("MCP_DEBUG", "0") == "1"
+log_level = logging.DEBUG if debug_mode else logging.INFO
+
 logging.basicConfig(
-    level=logging.INFO,
+    stream=sys.stderr,  # Explicitly output to stderr, not stdout
+    level=log_level,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger("mssql_mcp_server")
+
+if debug_mode:
+    logger.debug("Debug mode enabled via MCP_DEBUG environment variable")
 
 def validate_table_name(table_name: str) -> str:
     """Validate and escape table name to prevent SQL injection."""
@@ -167,6 +176,7 @@ async def list_tools() -> list[Tool]:
     """List available SQL Server tools."""
     command = get_command()
     logger.info("Listing tools...")
+    logger.debug("→ Received request: tools/list")
     return [
         Tool(
             name=command,
@@ -190,6 +200,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     config = get_db_config()
     command = get_command()
     logger.info(f"Calling tool: {name} with arguments: {arguments}")
+    logger.debug(f"→ Received request: tools/call {name}")
     
     if name != command:
         raise ValueError(f"Unknown tool: {name}")
@@ -198,40 +209,69 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
     if not query:
         raise ValueError("Query is required")
     
+    conn = None
+    cursor = None
     try:
         conn = pymssql.connect(**config)
         cursor = conn.cursor()
         cursor.execute(query)
         
-        # Special handling for table listing
-        if query.strip().upper().startswith("SELECT") and "INFORMATION_SCHEMA.TABLES" in query.upper():
-            tables = cursor.fetchall()
-            result = ["Tables_in_" + config["database"]]  # Header
-            result.extend([table[0] for table in tables])
-            cursor.close()
-            conn.close()
-            return [TextContent(type="text", text="\n".join(result))]
-        
-        # Regular SELECT queries
-        elif query.strip().upper().startswith("SELECT"):
+        # Check if the query returned a result set by examining cursor.description
+        # cursor.description is None for queries that don't return data (INSERT, UPDATE, DELETE, etc.)
+        if cursor.description is not None:
+            # This query returns data (SELECT, WITH, stored procedures that return data, etc.)
             columns = [desc[0] for desc in cursor.description]
             rows = cursor.fetchall()
-            result = [",".join(map(str, row)) for row in rows]
-            cursor.close()
-            conn.close()
-            return [TextContent(type="text", text="\n".join([",".join(columns)] + result))]
-        
-        # Non-SELECT queries
+            
+            # Handle empty result set
+            if not rows:
+                return [TextContent(type="text", text=f"Query returned 0 rows.\nColumns: {', '.join(columns)}")]
+            
+            # Format results as CSV-like output
+            result = [",".join(columns)]  # Header row
+            for row in rows:
+                # Handle NULL values and convert all values to strings
+                row_values = []
+                for value in row:
+                    if value is None:
+                        row_values.append("NULL")
+                    else:
+                        row_values.append(str(value))
+                result.append(",".join(row_values))
+            
+            result_text = "\n".join(result)
+            logger.debug(f"← Sending response: {len(rows)} rows returned")
+            return [TextContent(type="text", text=result_text)]
         else:
+            # This is a query that doesn't return data (INSERT, UPDATE, DELETE, DDL, etc.)
+            # Commit the transaction for DML operations
             conn.commit()
             affected_rows = cursor.rowcount
-            cursor.close()
-            conn.close()
-            return [TextContent(type="text", text=f"Query executed successfully. Rows affected: {affected_rows}")]
+            
+            # Provide more informative message based on affected rows
+            if affected_rows == -1:
+                # Some operations don't report affected rows (like DDL statements)
+                logger.debug("← Sending response: Query executed (DDL statement)")
+                return [TextContent(type="text", text="Query executed successfully.")]
+            else:
+                logger.debug(f"← Sending response: {affected_rows} rows affected")
+                return [TextContent(type="text", text=f"Query executed successfully. Rows affected: {affected_rows}")]
                 
+    except pymssql.DatabaseError as e:
+        logger.error(f"Database error executing SQL '{query}': {e}")
+        # Rollback transaction on error
+        if conn:
+            conn.rollback()
+        return [TextContent(type="text", text=f"Database error: {str(e)}")]
     except Exception as e:
-        logger.error(f"Error executing SQL '{query}': {e}")
+        logger.error(f"Unexpected error executing SQL '{query}': {e}")
         return [TextContent(type="text", text=f"Error executing query: {str(e)}")]
+    finally:
+        # Ensure resources are properly cleaned up
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 async def main():
     """Main entry point to run the MCP server."""
