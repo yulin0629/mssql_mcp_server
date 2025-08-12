@@ -66,6 +66,7 @@ MSSQL_PASSWORD=your_password
 ```bash
 MSSQL_PORT=1433                 # Custom port (default: 1433)
 MSSQL_ENCRYPT=true              # Force encryption
+MCP_DEBUG=1                     # Enable debug logging to stderr
 ```
 
 ## Alternative Installation Methods
@@ -94,6 +95,26 @@ git clone https://github.com/yulin0629/mssql_mcp_server.git
 cd mssql_mcp_server
 pip install -e .
 ```
+
+## Debugging
+
+Enable debug mode to see detailed logs in stderr:
+
+```bash
+# Set environment variable
+MCP_DEBUG=1
+
+# Or in Claude Desktop config
+"env": {
+  "MCP_DEBUG": "1",
+  ...
+}
+```
+
+Debug logs include:
+- Database connection details (without passwords)
+- SQL query execution traces
+- MCP protocol message flow
 
 ## Security
 
